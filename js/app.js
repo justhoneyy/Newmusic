@@ -63,39 +63,21 @@ import { HiFiClient } from './HiFi.js';
 
 // Capture real iOS state before spoofing (needed for background audio)
 if (typeof window !== 'undefined') {
+    // Capture real iOS state before spoofing (needed for background audio)
+if (typeof window !== 'undefined') {
     const _ua = navigator.userAgent.toLowerCase();
+
     // Spoof User-Agent to bypass Google's embedded browser check
     Object.defineProperty(navigator, 'userAgent', {
         get: function () {
             return 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
-// Delay analytics loading for faster startup
-window.addEventListener('load', () => {
-    setTimeout(() => {
-        const plausibleScript = document.createElement('script');
+        },
+    });
 
-        plausibleScript.async = true;
-        plausibleScript.defer = true;
-        plausibleScript.src =
-            'https://plausible.canine.tools/js/pa-dCMvQpiD1-AJmi8o3xviO.js';
-
-        document.head.appendChild(plausibleScript);
-
-        window.plausible =
-            window.plausible ||
-            function () {
-                (window.plausible.q = window.plausible.q || []).push(arguments);
-            };
-
-        window.plausible.init =
-            window.plausible.init ||
-            function (i) {
-                window.plausible.o = i || {};
-            };
-
-        window.plausible.init();
-    }, 4000);
-});
-});
+    window.__REAL_IOS__ =
+        /iphone|ipad|ipod/.test(_ua) ||
+        (/macintosh/.test(_ua) && navigator.maxTouchPoints > 1);
+}
         function (i) {
             window.plausible.o = i || {};
         };
