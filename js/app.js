@@ -63,8 +63,6 @@ import { HiFiClient } from './HiFi.js';
 
 // Capture real iOS state before spoofing (needed for background audio)
 if (typeof window !== 'undefined') {
-    // Capture real iOS state before spoofing (needed for background audio)
-if (typeof window !== 'undefined') {
     const _ua = navigator.userAgent.toLowerCase();
 
     // Spoof User-Agent to bypass Google's embedded browser check
@@ -78,31 +76,36 @@ if (typeof window !== 'undefined') {
         /iphone|ipad|ipod/.test(_ua) ||
         (/macintosh/.test(_ua) && navigator.maxTouchPoints > 1);
 }
-        function (i) {
-            window.plausible.o = i || {};
-        };
-    window.plausible.init();
-}
+
+// Delay analytics loading for faster startup
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        const plausibleScript = document.createElement('script');
+
+        plausibleScript.async = true;
+        plausibleScript.defer = true;
+        plausibleScript.src =
+            'https://plausible.canine.tools/js/pa-dCMvQpiD1-AJmi8o3xviO.js';
+
+        document.head.appendChild(plausibleScript);
+
+        window.plausible =
+            window.plausible ||
+            function () {
+                (window.plausible.q = window.plausible.q || []).push(arguments);
+            };
+
+        window.plausible.init =
+            window.plausible.init ||
+            function (i) {
+                window.plausible.o = i || {};
+            };
+
+        window.plausible.init();
+    }, 4000);
+});
 
 // Lazy-loaded modules
-let settingsModule = null;
-let downloadsModule = null;
-let metadataModule = null;
-
-async function loadSettingsModule() {
-    if (!settingsModule) {
-        settingsModule = await import('./settings.js');
-    }
-    return settingsModule;
-}
-
-async function loadDownloadsModule() {
-    if (!downloadsModule) {
-        downloadsModule = await import('./downloads.js');
-    }
-    return downloadsModule;
-}
-
 async function fetchcontributors() {
     try {
         const response = await fetch('https://api.samidy.com/api/contributors');
