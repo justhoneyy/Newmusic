@@ -72,14 +72,38 @@ export default defineConfig((_options) => {
         //     allowedHosts: ['<your_tailscale_hostname>'], // e.g. pi5.tailf5f622.ts.net
         // },
         build: {
-            outDir: 'dist',
-            emptyOutDir: true,
-            sourcemap: false,
-            minify: 'esbuild',
-            reportCompressedSize: false,
-            rollupOptions: {
-                treeshake: true,
+    outDir: 'dist',
+    emptyOutDir: true,
+    sourcemap: false,
+    minify: 'esbuild',
+    cssCodeSplit: true,
+    reportCompressedSize: false,
+    chunkSizeWarningLimit: 1000,
+
+    rollupOptions: {
+        treeshake: true,
+
+        output: {
+            manualChunks(id) {
+                if (id.includes('@ffmpeg')) {
+                    return 'ffmpeg';
+                }
+
+                if (id.includes('butterchurn')) {
+                    return 'visualizer';
+                }
+
+                if (id.includes('hls.js') || id.includes('shaka-player')) {
+                    return 'streaming';
+                }
+
+                if (id.includes('node_modules')) {
+                    return 'vendor';
+                }
             },
+        },
+    },
+},
         },
         plugins: [
             proxyAudioPlugin(),
