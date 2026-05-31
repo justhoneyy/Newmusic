@@ -30,7 +30,6 @@ export default defineConfig((_options) => {
 
     return {
         test: {
-            // https://vitest.dev/guide/browser/
             browser: {
                 enabled: true,
                 provider: playwright(),
@@ -38,14 +37,18 @@ export default defineConfig((_options) => {
                 instances: [{ browser: 'chromium' }],
             },
         },
+
         base: './',
+
         define: {
             __COMMIT_HASH__: JSON.stringify(commitHash),
             __VITEST__: !!process.env.VITEST,
         },
+
         worker: {
             format: 'es',
         },
+
         resolve: {
             alias: {
                 '!lucide': '/node_modules/lucide-static/icons',
@@ -54,97 +57,115 @@ export default defineConfig((_options) => {
 
                 events: '/node_modules/events/events.js',
                 pocketbase: '/node_modules/pocketbase/dist/pocketbase.es.js',
-                stream: path.resolve(__dirname, 'stream-stub.js'), // Stub for stream module
+                stream: path.resolve(__dirname, 'stream-stub.js'),
             },
         },
+
         optimizeDeps: {
             exclude: ['pocketbase', '@ffmpeg/ffmpeg', '@ffmpeg/util'],
         },
+
         server: {
             fs: {
                 allow: ['.', 'node_modules'],
-                // host: true,
-                // allowedHosts: ['<your_tailscale_hostname>'], // e.g. pi5.tailf5f622.ts.net
             },
         },
-        // preview: {
-build: {
-    outDir: 'dist',
-    emptyOutDir: true,
-    sourcemap: false,
-    minify: 'esbuild',
-    cssCodeSplit: true,
-    reportCompressedSize: false,
-    chunkSizeWarningLimit: 1000,
 
-    rollupOptions: {
-        treeshake: true,
+        build: {
+            outDir: 'dist',
+            emptyOutDir: true,
+            sourcemap: false,
+            minify: 'esbuild',
+            cssCodeSplit: true,
+            reportCompressedSize: false,
+            chunkSizeWarningLimit: 1000,
 
-        output: {
-            manualChunks: (id) => {
-                if (id.includes('@ffmpeg')) {
-                    return 'ffmpeg';
-                }
+            rollupOptions: {
+                treeshake: true,
 
-                if (id.includes('butterchurn')) {
-                    return 'visualizer';
-                }
+                output: {
+                    manualChunks: (id) => {
+                        if (id.includes('@ffmpeg')) {
+                            return 'ffmpeg';
+                        }
 
-                if (
-                    id.includes('hls.js') ||
-                    id.includes('shaka-player')
-                ) {
-                    return 'streaming';
-                }
+                        if (id.includes('butterchurn')) {
+                            return 'visualizer';
+                        }
 
-                if (id.includes('node_modules')) {
-                    return 'vendor';
-                }
+                        if (
+                            id.includes('hls.js') ||
+                            id.includes('shaka-player')
+                        ) {
+                            return 'streaming';
+                        }
+
+                        if (id.includes('node_modules')) {
+                            return 'vendor';
+                        }
+                    },
+                },
             },
         },
-    },
-},
+
+        plugins: [
             proxyAudioPlugin(),
             authGatePlugin(),
             uploadPlugin(),
             blobAssetPlugin(),
             svgUse(),
+
             VitePWA({
                 registerType: 'prompt',
+
                 workbox: {
                     globPatterns: ['**/*.{js,css,html,ico,png,svg,json}'],
+
                     cleanupOutdatedCaches: true,
-                    maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3 MiB limit
-                    // Define runtime caching strategies
+
+                    maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
+
                     runtimeCaching: [
                         {
-                            urlPattern: ({ request }) => request.destination === 'image',
+                            urlPattern: ({ request }) =>
+                                request.destination === 'image',
+
                             handler: 'CacheFirst',
+
                             options: {
                                 cacheName: 'images',
+
                                 expiration: {
                                     maxEntries: 100,
-                                    maxAgeSeconds: 60 * 24 * 60 * 60, // 60 Days
+                                    maxAgeSeconds: 60 * 24 * 60 * 60,
                                 },
                             },
                         },
+
                         {
                             urlPattern: ({ request }) =>
-                                request.destination === 'audio' || request.destination === 'video',
+                                request.destination === 'audio' ||
+                                request.destination === 'video',
+
                             handler: 'CacheFirst',
+
                             options: {
                                 cacheName: 'media',
+
                                 expiration: {
                                     maxEntries: 50,
-                                    maxAgeSeconds: 60 * 24 * 60 * 60, // 60 Days
+                                    maxAgeSeconds: 60 * 24 * 60 * 60,
                                 },
-                                rangeRequests: true, // Support scrubbing
+
+                                rangeRequests: true,
                             },
                         },
                     ],
                 },
+
                 includeAssets: ['discord.html'],
-                manifest: false, // Use existing public/manifest.json
+
+                manifest: false,
             }),
         ],
     };
