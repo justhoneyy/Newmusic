@@ -84,7 +84,7 @@ export default defineConfig((_options) => {
         treeshake: true,
 
         output: {
-            manualChunks(id) {
+            manualChunks: (id) => {
                 if (id.includes('@ffmpeg')) {
                     return 'ffmpeg';
                 }
@@ -93,7 +93,10 @@ export default defineConfig((_options) => {
                     return 'visualizer';
                 }
 
-                if (id.includes('hls.js') || id.includes('shaka-player')) {
+                if (
+                    id.includes('hls.js') ||
+                    id.includes('shaka-player')
+                ) {
                     return 'streaming';
                 }
 
@@ -104,7 +107,6 @@ export default defineConfig((_options) => {
         },
     },
 },
-        },
         plugins: [
             proxyAudioPlugin(),
             authGatePlugin(),
