@@ -68,32 +68,30 @@ export default defineConfig((_options) => {
             },
         },
         // preview: {
-window.addEventListener('load', () => {
-    setTimeout(() => {
-        const plausibleScript = document.createElement('script');
+build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+    sourcemap: false,
+    minify: 'esbuild',
+    cssCodeSplit: true,
+    reportCompressedSize: false,
+    chunkSizeWarningLimit: 1000,
 
-        plausibleScript.async = true;
-        plausibleScript.defer = true;
-        plausibleScript.src =
-            'https://plausible.canine.tools/js/pa-dCMvQpiD1-AJmi8o3xviO.js';
+    rollupOptions: {
+        treeshake: true,
 
-        document.head.appendChild(plausibleScript);
+        output: {
+            manualChunks: (id) => {
+                if (id.includes('@ffmpeg')) {
+                    return 'ffmpeg';
+                }
 
-        window.plausible =
-            window.plausible ||
-            function () {
-                (window.plausible.q = window.plausible.q || []).push(arguments);
-            };
+                if (id.includes('butterchurn')) {
+                    return 'visualizer';
+                }
 
-        window.plausible.init =
-            window.plausible.init ||
-            function (i) {
-                window.plausible.o = i || {};
-            };
-
-        window.plausible.init();
-    }, 4000);
-});
+                if (
+                    id.includes('hls.js') ||
                     id.includes('shaka-player')
                 ) {
                     return 'streaming';
@@ -106,7 +104,6 @@ window.addEventListener('load', () => {
         },
     },
 },
-        plugins: [
             proxyAudioPlugin(),
             authGatePlugin(),
             uploadPlugin(),
