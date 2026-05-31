@@ -32,7 +32,11 @@ import { authManager } from './accounts/auth.js';
 import { registerSW } from 'virtual:pwa-register';
 import { openEditProfile } from './profile.js';
 import { ThemeStore } from './themeStore.js';
-import './commandPalette.js';
+window.addEventListener('load', () => {
+    requestIdleCallback(async () => {
+        await import('./commandPalette.js');
+    });
+});
 import { initTracker } from './tracker.js';
 import { initAnalytics } from './analytics.js';
 import {
