@@ -68,6 +68,7 @@ if (typeof window !== 'undefined') {
     Object.defineProperty(navigator, 'userAgent', {
         get: function () {
             return 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+// Delay analytics loading for faster startup
 window.addEventListener('load', () => {
     setTimeout(() => {
         const plausibleScript = document.createElement('script');
@@ -94,15 +95,6 @@ window.addEventListener('load', () => {
         window.plausible.init();
     }, 4000);
 });
-
-        window.plausible.init =
-            window.plausible.init ||
-            function (i) {
-                window.plausible.o = i || {};
-            };
-
-        window.plausible.init();
-    }, 4000);
 });
         function (i) {
             window.plausible.o = i || {};
