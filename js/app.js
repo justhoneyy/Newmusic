@@ -94,6 +94,16 @@ window.addEventListener('load', () => {
         window.plausible.init();
     }, 4000);
 });
+
+        window.plausible.init =
+            window.plausible.init ||
+            function (i) {
+                window.plausible.o = i || {};
+            };
+
+        window.plausible.init();
+    }, 4000);
+});
         function (i) {
             window.plausible.o = i || {};
         };
